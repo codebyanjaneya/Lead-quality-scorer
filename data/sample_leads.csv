@@ -1,0 +1,21 @@
+company_name,contact_email,contact_phone,company_size,industry,revenue
+Microsoft,john@microsoft.com,+1-206-555-0100,50000,Technology,200000000
+Apple,jane@apple.com,+1-408-555-0100,150000,Technology,300000000
+Google,contact@google.com,+1-650-555-0100,180000,Technology,280000000
+Amazon,sales@amazon.com,+1-206-555-0101,1500000,E-commerce,513600000
+Meta,hr@meta.com,+1-650-555-0102,86000,Technology,115000000
+Tesla,recruit@tesla.com,+1-510-555-0103,128000,Automotive,815000000
+Netflix,jobs@netflix.com,+1-408-555-0104,12800,Media,31616000
+Uber,careers@uber.com,+1-415-555-0105,28000,Transportation,31400000
+TechCorp USA,sales@techcorp.com,+1-555-555-0100,1000,SaaS,10000000
+DataSolutions,contact@datasolutions.com,+1-555-555-0101,250,Software,2500000
+Random Startup,founder@startup.com,+91-9999-999999,5,Software,500000
+IndianAI,info@indianai.co.in,+91-1234-567890,20,AI/ML,2000000
+BigBank,corporate@bigbank.com,+1-212-555-0100,5000,Finance,50000000
+LocalShop,contact@localshop.com,+1-555-555-0102,15,Retail,300000
+MedicalCorp,sales@medicalcorp.com,+1-555-555-0103,800,Healthcare,8000000
+FinTech Innovations,careers@fintech.co,+1-415-555-0106,150,FinTech,3500000
+CloudServices Inc,hello@cloudservices.com,+1-206-555-0107,600,Cloud Computing,6000000
+MarketingPro,contact@marketingpro.com,+1-555-555-0104,120,Marketing,1200000
+Design Studio,jobs@designstudio.com,+1-555-555-0105,45,Design,450000
+ConsultingFirm,careers@consulting.com,+1-212-555-0101,2500,Consulting,25000000
