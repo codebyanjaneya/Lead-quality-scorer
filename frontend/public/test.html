@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lead Scorer Test</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-blue-50 p-8">
+  <div class="max-w-2xl mx-auto">
+    <h1 class="text-3xl font-bold mb-8">Lead Quality Scorer - Test All Features</h1>
+
+    <button onclick="test1A()" class="bg-green-600 text-white px-6 py-3 rounded mb-4 w-full">
+      Test Feature 1A: Scoring
+    </button>
+    <pre id="result1a" class="bg-white p-4 rounded mb-6 border border-green-200 overflow-auto" style="display:none;"></pre>
+
+    <button onclick="test1B()" class="bg-yellow-600 text-white px-6 py-3 rounded mb-4 w-full">
+      Test Feature 1B: Duplicate Detection
+    </button>
+    <pre id="result1b" class="bg-white p-4 rounded mb-6 border border-yellow-200 overflow-auto" style="display:none;"></pre>
+
+    <button onclick="test1C()" class="bg-red-600 text-white px-6 py-3 rounded mb-4 w-full">
+      Test Feature 1C: CRM Sync
+    </button>
+    <pre id="result1c" class="bg-white p-4 rounded mb-6 border border-red-200 overflow-auto" style="display:none;"></pre>
+  </div>
+
+  <script>
+    async function test1A() {
+      const el = document.getElementById('result1a');
+      el.style.display = 'block';
+      el.textContent = 'Testing...';
+      try {
+        const r = await fetch('http://localhost:8000/api/score', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            company_name: 'Microsoft',
+            company_size: 50000,
+            industry: 'Technology',
+            revenue: 200000000,
+            contact_email: 'john@microsoft.com',
+            contact_phone: '+1-206-555-0100'
+          })
+        });
+        const data = await r.json();
+        el.textContent = JSON.stringify(data, null, 2);
+      } catch(e) {
+        el.textContent = 'ERROR: ' + e.message;
+      }
+    }
+
+    async function test1B() {
+      const el = document.getElementById('result1b');
+      el.style.display = 'block';
+      el.textContent = 'Testing...';
+      try {
+        const r = await fetch('http://localhost:8000/api/detect-duplicates', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            leads: [
+              { company_name: 'Microsoft Corp', contact_email: 'john@microsoft.com', contact_phone: '+1-206-555-0100', final_score: 85 },
+              { company_name: 'Microsoft Inc', contact_email: 'jane@microsoft.com', contact_phone: '+1-206-555-0101', final_score: 80 },
+              { company_name: 'Microsoft', contact_email: 'contact@gmail.com', contact_phone: '+1-206-555-0102', final_score: 75 },
+              { company_name: 'Apple', contact_email: 'alex@apple.com', contact_phone: '+1-408-555-0100', final_score: 90 },
+              { company_name: 'Google', contact_email: 'bob@google.com', contact_phone: '+1-650-555-0100', final_score: 88 }
+            ]
+          })
+        });
+        const data = await r.json();
+        el.textContent = 'SUMMARY: ' + data.summary.summary + '\n\n' + JSON.stringify(data, null, 2);
+      } catch(e) {
+        el.textContent = 'ERROR: ' + e.message;
+      }
+    }
+
+    async function test1C() {
+      const el = document.getElementById('result1c');
+      el.style.display = 'block';
+      el.textContent = 'Testing...';
+      try {
+        const r = await fetch('http://localhost:8000/api/sync-crm', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            crm_type: 'hubspot',
+            leads: [
+              { company_name: 'Microsoft', contact_email: 'john@microsoft.com', final_score: 86.1, quality: 'HIGH' },
+              { company_name: 'Startup Inc', contact_email: 'jane@startup.com', final_score: 65.0, quality: 'MEDIUM' }
+            ]
+          })
+        });
+        const data = await r.json();
+        el.textContent = JSON.stringify(data, null, 2);
+      } catch(e) {
+        el.textContent = 'ERROR: ' + e.message;
+      }
+    }
+  </script>
+</body>
+</html>

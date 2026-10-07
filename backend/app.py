@@ -10,8 +10,24 @@ from fastapi.responses import FileResponse, JSONResponse
 import pandas as pd
 import csv
 import io
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
+from pydantic import BaseModel
 from scoring import LeadScorer
+
+class ScoreRequest(BaseModel):
+    company_name: str
+    company_size: int
+    industry: str
+    revenue: int
+    contact_email: str
+    contact_phone: str
+
+class DuplicateRequest(BaseModel):
+    leads: List[Dict[str, Any]]
+
+class CRMRequest(BaseModel):
+    crm_type: str = "hubspot"
+    leads: List[Dict[str, Any]]
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -253,6 +269,58 @@ def export_leads(min_score: float = Query(0)):
         "count": len(filtered),
         "csv_data": csv_buffer.getvalue(),
     }
+
+@app.post("/api/score")
+def score_lead(request: ScoreRequest):
+    """
+    Score a single lead - Feature 1A Demo
+    """
+    company = {
+        'company_name': request.company_name,
+        'company_size': request.company_size,
+        'industry': request.industry,
+        'revenue': request.revenue,
+        'location': 'US',
+    }
+    contact = {
+        'contact_email': request.contact_email,
+        'contact_phone': request.contact_phone,
+    }
+
+    result = scorer.calculate_final_score(company, contact)
+    return result
+
+@app.post("/api/detect-duplicates")
+def detect_duplicates_endpoint(request: DuplicateRequest):
+    """
+    Detect duplicates in leads - Feature 1B Demo
+    """
+    from duplicate_detection import DuplicateDetector
+
+    detector = DuplicateDetector()
+    leads = request.leads
+
+    unique, duplicates, merged = detector.find_duplicates(leads)
+    summary = detector.get_deduplication_summary()
+
+    return {
+        "unique": unique,
+        "duplicates": duplicates,
+        "merged": merged,
+        "summary": summary
+    }
+
+@app.post("/api/sync-crm")
+def sync_crm_endpoint(request: CRMRequest):
+    """
+    Sync leads to CRM - Feature 1C Demo
+    """
+    from crm_integration import CRMIntegration
+
+    crm = CRMIntegration(request.crm_type)
+    result = crm.batch_sync_to_crm(request.leads, dry_run=True)
+
+    return result
 
 @app.get("/health")
 def health_check():

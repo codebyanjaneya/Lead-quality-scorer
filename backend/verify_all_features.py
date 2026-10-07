@@ -32,15 +32,15 @@ def verify_feature_1a():
 
         result = scorer.calculate_final_score(test_lead, contact)
 
-        print("\n✓ Scoring Logic:")
-        print(f"  Score: {result['final_score']} {result['color']} ({result['quality']})")
+        print("\n[OK] Scoring Logic:")
+        print(f"  Score: {result['final_score']} ({result['quality']})")
         print(f"  Authority: {result['components']['authority']}/100")
         print(f"  Engagement: {result['components']['engagement']}/100")
         print(f"  Conversion: {result['components']['conversion']}/100")
 
         # Test CSV loading
         df = pd.read_csv('../data/sample_leads.csv')
-        print(f"\n✓ CSV Processing:")
+        print(f"\n[OK] CSV Processing:")
         print(f"  Loaded: {len(df)} leads")
         print(f"  Columns: {list(df.columns)}")
 
@@ -59,14 +59,14 @@ def verify_feature_1a():
                 'contact_phone': str(row['contact_phone']),
             }
             score_result = scorer.calculate_final_score(company_data, contact_data)
-            print(f"  {row['company_name']:20} → {score_result['final_score']:5.1f} {score_result['color']}")
+            print(f"  {row['company_name']:20} -> {score_result['final_score']:5.1f} ({score_result['quality']})")
             scored_count += 1
 
-        print(f"\n✅ Feature 1A: VERIFIED ({scored_count} leads scored)")
+        print(f"\n[PASS] Feature 1A: VERIFIED ({scored_count} leads scored)")
         return True
 
     except Exception as e:
-        print(f"❌ Feature 1A FAILED: {e}")
+        print(f"[FAIL] Feature 1A FAILED: {e}")
         return False
 
 def verify_feature_1b():
@@ -87,7 +87,7 @@ def verify_feature_1b():
             {'company_name': 'Google', 'contact_email': 'bob@google.com', 'contact_phone': '+1-650-555-0100', 'final_score': 88},
         ]
 
-        print(f"\n✓ Duplicate Detection:")
+        print(f"\n[OK] Duplicate Detection:")
         print(f"  Input: {len(test_leads)} leads")
 
         unique, dupes, merged = detector.find_duplicates(test_leads)
@@ -96,19 +96,19 @@ def verify_feature_1b():
         print(f"  Unique leads: {len(unique)}")
         print(f"  After merge: {len(merged)} leads")
 
-        print(f"\n✓ Merge Results:")
+        print(f"\n[OK] Merge Results:")
         for m in merged:
             if m.get('is_merged'):
-                print(f"  → {m['company_name']:20} (merged {m['duplicate_count']} leads)")
+                print(f"  > {m['company_name']:20} (merged {m['duplicate_count']} leads)")
 
         summary = detector.get_deduplication_summary()
-        print(f"\n✓ Summary: {summary['summary']}")
+        print(f"\n[OK] Summary: {summary['summary']}")
 
-        print(f"\n✅ Feature 1B: VERIFIED")
+        print(f"\n[PASS] Feature 1B: VERIFIED")
         return True
 
     except Exception as e:
-        print(f"❌ Feature 1B FAILED: {e}")
+        print(f"[FAIL] Feature 1B FAILED: {e}")
         return False
 
 def verify_feature_1c():
@@ -142,7 +142,7 @@ def verify_feature_1c():
             },
         ]
 
-        print(f"\n✓ CRM Sync (HubSpot):")
+        print(f"\n[OK] CRM Sync (HubSpot):")
         print(f"  Input: {len(test_leads)} leads")
 
         result = crm.batch_sync_to_crm(test_leads, dry_run=True)
@@ -150,22 +150,22 @@ def verify_feature_1c():
         print(f"  Synced: {result['synced']}/{result['total_leads']}")
         print(f"  Failed: {result['failed']}")
 
-        print(f"\n✓ Synced Leads:")
+        print(f"\n[OK] Synced Leads:")
         for lead in result['synced_leads']:
-            print(f"  → {lead['company']:20} | {lead['email']:30} | {lead['status']}")
+            print(f"  > {lead['company']:20} | {lead['email']:30} | {lead['status']}")
 
         # Check connection
         status = crm.get_crm_connection_status()
-        print(f"\n✓ Connection Status:")
+        print(f"\n[OK] Connection Status:")
         print(f"  CRM: {status['crm_type']}")
         print(f"  Status: {status['status']}")
         print(f"  Ready: {status['ready']}")
 
-        print(f"\n✅ Feature 1C: VERIFIED")
+        print(f"\n[PASS] Feature 1C: VERIFIED")
         return True
 
     except Exception as e:
-        print(f"❌ Feature 1C FAILED: {e}")
+        print(f"[FAIL] Feature 1C FAILED: {e}")
         return False
 
 def main():
@@ -186,16 +186,16 @@ def main():
     print("=" * 60)
 
     for feature, passed in results.items():
-        status = "✅ PASSED" if passed else "❌ FAILED"
+        status = "[PASS]" if passed else "[FAIL]"
         print(f"{feature}: {status}")
 
     all_passed = all(results.values())
 
     print("\n" + "=" * 60)
     if all_passed:
-        print("✅ ALL FEATURES VERIFIED - READY FOR PRODUCTION")
+        print("[SUCCESS] ALL FEATURES VERIFIED - READY FOR PRODUCTION")
     else:
-        print("❌ SOME FEATURES FAILED - FIX REQUIRED")
+        print("[ERROR] SOME FEATURES FAILED - FIX REQUIRED")
     print("=" * 60)
 
     return all_passed

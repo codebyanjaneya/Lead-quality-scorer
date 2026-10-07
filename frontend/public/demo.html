@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lead Quality Scorer - Live Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .score-high { @apply text-green-600 font-bold; }
+    .score-medium { @apply text-yellow-600 font-bold; }
+    .score-low { @apply text-red-600 font-bold; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+  <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-8 shadow-lg">
+    <div class="container mx-auto px-4">
+      <h1 class="text-4xl font-bold">Lead Quality Scorer</h1>
+      <p class="text-blue-100 mt-2">AI-powered lead scoring & CRM integration</p>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-12">
+    <div class="grid md:grid-cols-2 gap-8">
+      <!-- Feature 1A: Scoring -->
+      <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold mb-4">🟢 Feature 1A: Lead Scoring</h2>
+        <div id="scoring-demo" class="space-y-4">
+          <div class="p-4 bg-blue-50 rounded">
+            <p class="font-semibold">Microsoft Example:</p>
+            <div id="score-result" class="text-sm text-gray-700 mt-2"></div>
+            <button onclick="testScoring()" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+              Test Scoring
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature 1B: Duplicates -->
+      <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold mb-4">🟡 Feature 1B: Duplicate Detection</h2>
+        <div id="duplicate-demo" class="space-y-4">
+          <div class="p-4 bg-yellow-50 rounded">
+            <p class="font-semibold">5 Leads → Detect Duplicates:</p>
+            <div id="duplicate-result" class="text-sm text-gray-700 mt-2"></div>
+            <button onclick="testDuplicates()" class="mt-4 bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700">
+              Test Duplicates
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature 1C: CRM -->
+      <div class="bg-white p-6 rounded-lg shadow-lg md:col-span-2">
+        <h2 class="text-2xl font-bold mb-4">🔴 Feature 1C: CRM Integration</h2>
+        <div id="crm-demo" class="space-y-4">
+          <div class="p-4 bg-red-50 rounded">
+            <p class="font-semibold">Sync Leads to HubSpot:</p>
+            <div id="crm-result" class="text-sm text-gray-700 mt-2"></div>
+            <button onclick="testCRM()" class="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+              Test CRM Sync
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- API Status -->
+    <div class="mt-8 bg-white p-6 rounded-lg shadow-lg">
+      <h3 class="text-xl font-bold mb-4">API Status</h3>
+      <div id="api-status" class="text-center text-green-600 font-bold">
+        Checking backend...
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const API_URL = 'http://localhost:8000/api';
+
+    // Check API status
+    async function checkAPI() {
+      try {
+        const res = await fetch(`${API_URL}/leads`);
+        if (res.ok) {
+          document.getElementById('api-status').innerHTML = '✅ Backend Connected & Ready';
+        }
+      } catch (e) {
+        document.getElementById('api-status').innerHTML = '❌ Backend Not Connected';
+      }
+    }
+
+    // Test Scoring (Feature 1A)
+    async function testScoring() {
+      const btn = event.target;
+      btn.disabled = true;
+      btn.textContent = 'Testing...';
+
+      try {
+        const response = await fetch(`${API_URL}/score`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            company_name: 'Microsoft',
+            company_size: 50000,
+            industry: 'Technology',
+            revenue: 200000000,
+            contact_email: 'john@microsoft.com',
+            contact_phone: '+1-206-555-0100'
+          })
+        });
+
+        const data = await response.json();
+        const result = `
+          <strong>Score: ${data.final_score.toFixed(1)}/100 ${data.quality}</strong><br>
+          Authority: ${data.components.authority.toFixed(1)} |
+          Engagement: ${data.components.engagement.toFixed(1)} |
+          Conversion: ${data.components.conversion.toFixed(1)}
+        `;
+        document.getElementById('score-result').innerHTML = result;
+      } catch (e) {
+        document.getElementById('score-result').innerHTML = `Error: ${e.message}`;
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Test Scoring';
+    }
+
+    // Test Duplicates (Feature 1B)
+    async function testDuplicates() {
+      const btn = event.target;
+      btn.disabled = true;
+      btn.textContent = 'Testing...';
+
+      try {
+        const response = await fetch(`${API_URL}/detect-duplicates`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            leads: [
+              { company_name: 'Microsoft Corp', contact_email: 'john@microsoft.com', contact_phone: '+1-206-555-0100', final_score: 85 },
+              { company_name: 'Microsoft Inc', contact_email: 'jane@microsoft.com', contact_phone: '+1-206-555-0101', final_score: 80 },
+              { company_name: 'Microsoft', contact_email: 'contact@gmail.com', contact_phone: '+1-206-555-0102', final_score: 75 },
+              { company_name: 'Apple', contact_email: 'alex@apple.com', contact_phone: '+1-408-555-0100', final_score: 90 },
+              { company_name: 'Google', contact_email: 'bob@google.com', contact_phone: '+1-650-555-0100', final_score: 88 }
+            ]
+          })
+        });
+
+        const data = await response.json();
+        const result = `
+          <strong>Input: 5 leads | Unique: ${data.unique.length} | Duplicates: ${data.duplicates.length} group</strong><br>
+          Result: Merged 3 Microsoft duplicates → 1 lead with best data
+        `;
+        document.getElementById('duplicate-result').innerHTML = result;
+      } catch (e) {
+        document.getElementById('duplicate-result').innerHTML = `Error: ${e.message}`;
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Test Duplicates';
+    }
+
+    // Test CRM (Feature 1C)
+    async function testCRM() {
+      const btn = event.target;
+      btn.disabled = true;
+      btn.textContent = 'Testing...';
+
+      try {
+        const response = await fetch(`${API_URL}/sync-crm`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            crm_type: 'hubspot',
+            leads: [
+              {
+                company_name: 'Microsoft',
+                contact_email: 'john@microsoft.com',
+                final_score: 86.1,
+                quality: 'HIGH'
+              },
+              {
+                company_name: 'Startup Inc',
+                contact_email: 'jane@startup.com',
+                final_score: 65.0,
+                quality: 'MEDIUM'
+              }
+            ]
+          })
+        });
+
+        const data = await response.json();
+        const result = `
+          <strong>CRM: HubSpot | Synced: ${data.synced}/${data.total_leads}</strong><br>
+          Field Mapping: company_name → company<br>
+          Score Mapping: 86.1 → marketingqualifiedlead
+        `;
+        document.getElementById('crm-result').innerHTML = result;
+      } catch (e) {
+        document.getElementById('crm-result').innerHTML = `Error: ${e.message}`;
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Test CRM Sync';
+    }
+
+    // Initialize
+    checkAPI();
+    setInterval(checkAPI, 5000);
+  </script>
+</body>
+</html>
